@@ -13,10 +13,10 @@ FROM nginx:alpine
 RUN rm -rf /usr/share/nginx/html/*
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy nginx template (uses envsubst for env var substitution)
+# Copy nginx template (automatic substitution happens in /etc/nginx/templates)
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 
 EXPOSE 80
 
-# envsubst replaces ${PORT} and ${BACKEND_URL} at container start
-CMD ["/bin/sh", "-c", "envsubst '${PORT} ${BACKEND_URL}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+# The standard nginx image entrypoint automatically processes templates
+CMD ["nginx", "-g", "daemon off;"]
