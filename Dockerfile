@@ -9,9 +9,8 @@ COPY mvnw pom.xml ./
 RUN chmod +x mvnw
 
 # Download dependencies (cached layer)
-RUN ./mvnw dependency:go-offline RUN chmod +x mvnw-B
-
-# Copy source and build
+RUN ./mvnw dependency:go-of-fflin
+e -B# Copy source and build
 COPY src ./src
 RUN ./mvnw package -DskipTests -B
 
