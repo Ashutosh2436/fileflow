@@ -1,0 +1,90 @@
+### ================= ROOT CHECK =================
+GET http://localhost:8080/api/v1/files
+
+
+### ================= 1️⃣ UPLOAD FILE =================
+# Make sure userId=1 exists in DB
+### ================= CREATE USER =================
+
+POST http://localhost:8080/api/v1/files/upload/1
+Content-Type: application/json
+
+{
+  "fileName": "resume.pdf",
+  "fileType": "pdf",
+  "fileSize": 2048,
+  "filePath": "/uploads/resume.pdf"
+}
+### ================= 2️⃣ SHARE FILE =================
+# Replace {fileId} with the ID returned from upload response
+POST http://localhost:8080/api/v1/files/share?fileId=1&userId=1
+
+
+### ================= 3️⃣ REVOKE ACCESS =================
+# Use SAME fileId and SAME userId as above
+DELETE http://localhost:8080/api/v1/files/revoke?fileId=1&userId=1
+
+
+### ================= 4️⃣ DELETE FILE =================
+# Use SAME fileId
+DELETE http://localhost:8080/api/v1/files/delete/1
+
+### REGISTER USER
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Ashutosh",
+  "lastName": "Awasthi",
+  "email": "ashu@gmail.com",
+  "phoneNumber": "9999999999",
+  "passwordHash": "123456"
+}
+
+### REGISTER USER 3
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Priya",
+  "lastName": "Verma",
+  "email": "priya@gmail.com",
+  "phoneNumber": "7777777777",
+  "passwordHash": "mypassword"
+}
+###
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+"firstName": "Rohan",
+"lastName": "Sharma",
+"email": "rohan@gmail.com",
+"phoneNumber": "8888888888",
+"passwordHash": "rohan123"
+}
+
+### LOGIN USER
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "ashu@gmail.com",
+  "passwordHash": "123456"
+}
+### LOGIN USER 3
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "priya@gmail.com",
+  "passwordHash": "mypassword"
+}
+###
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "rohan@gmail.com",
+  "passwordHash": "rohan123"
+}

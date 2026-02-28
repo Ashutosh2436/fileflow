@@ -1,0 +1,61 @@
+services:
+
+  # ─── PostgreSQL Database ────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: fileflow-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: teamlead_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5332:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Spring Boot Backend ────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fileflow-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/teamlead_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "false"
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://localhost:8080/api/v1/files || exit 1" ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+
+  # ─── React Frontend (Nginx) ─────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: fileflow-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  db_data:
